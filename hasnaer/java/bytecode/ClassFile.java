@@ -69,13 +69,78 @@ public class ClassFile extends DataInputStream {
         }
     }
 
-    private List<AttributeInfo> loadAttributes(int attributes_count) {
+    private List<AttributeInfo> loadAttributes(int attributes_count)
+            throws IOException {
         List<AttributeInfo> att_list = new ArrayList<AttributeInfo>();
+        AttributeInfo attribute = null;
+        for (int i = 0; i < attributes_count; i++) {
+            int attribute_name_index = this.readUnsignedShort();
+            int attribute_length = this.readInt();
+            AttributeInfo.Type att_type = AttributeInfo.Type.valueOf(((UTF8_Info) this.constant_pool.get(attribute_name_index - 1)).getValue());
+
+            switch (att_type) {
+                case ConstantValue:
+                    attribute = new ConstantValue(attribute_name_index,
+                            attribute_length, this.readUnsignedShort());
+                    
+                    break;
+                case Code:
+                    attribute = new Code(attribute_name_index,
+                            attribute_length, this.readUnsignedShort(),
+                            this.readUnsignedShort());
+                    int code_length = this.readInt();
+                    byte[] code = new byte[code_length];
+                    this.readFully(code);
+                    ((Code)attribute).setCode(code);
+                    int exception_table_length = this.readUnsignedShort();
+
+                    for (int j = 0; j < exception_table_length; j++) {
+                        ((Code)attribute).addExceptionTableEntry(
+                                new ExceptionTableEntry(this.readUnsignedShort(), this.readUnsignedShort(), this.readUnsignedShort(), this.readUnsignedShort()));
+
+                    }
+
+                    int att_count = this.readUnsignedShort();
+                    ((Code)attribute).setAttributes(loadAttributes(att_count));
+                    break;
+
+                case Exceptions:
+                    attribute = new Exceptions(attribute_name_index,
+                            attribute_length);
+                    int number_of_exceptions = this.readUnsignedShort();
+
+                    for (int j = 0; j < number_of_exceptions; j++) {
+                        ((Exceptions)attribute).addExceptionIndex(this.readUnsignedShort());
+                    }
+                    
+                    break;
+                    
+                case InnerClasses:
+                    attribute = new InnerClasses(attribute_name_index,
+                            attribute_length);
+                    int number_of_classes = this.readUnsignedShort();
+                    for(int j = 0; j < number_of_classes; j++){
+                        ((InnerClasses)attribute).addInnerClass(
+                                new InnerClasses.InnerClass(this.readUnsignedShort(), 
+                                        this.readUnsignedShort(), 
+                                        this.readUnsignedShort(), 
+                                        this.readUnsignedShort()));
+                    }
+                    break;
+            }
+            
+            att_list.add(attribute);
+        }
         return att_list;
     }
 
-    private void loadMethods(int methods_count) {
+    private void loadMethods(int methods_count) throws IOException {
         for (int i = 0; i < methods_count; i++) {
+            MethodInfo method = new MethodInfo(this.readUnsignedShort(),
+                    this.readUnsignedShort(), this.readUnsignedShort());
+            int attribute_count = this.readUnsignedShort();
+            method.setAttributes(this.loadAttributes(attribute_count));
+            this.methods.add(method);
         }
     }
 
@@ -83,9 +148,10 @@ public class ClassFile extends DataInputStream {
         for (int i = 0; i < fields_count; i++) {
             FieldInfo field = new FieldInfo(this.readUnsignedShort(),
                     this.readUnsignedShort(), this.readUnsignedShort());
-            
+
             int attributes_count = this.readUnsignedShort();
             field.setAttributes(this.loadAttributes(attributes_count));
+            this.fields.add(field);
         }
     }
 
@@ -96,13 +162,13 @@ public class ClassFile extends DataInputStream {
         }
     }
 
-    private String getInterface(int index){
-    
-        int name_index = ((Class_Info)this.constant_pool.get(index - 1)).getName_index();
-        return ((UTF8_Info)this.constant_pool.get(name_index - 1)).getValue();
-        
+    private String getInterface(int index) {
+
+        int name_index = ((Class_Info) this.constant_pool.get(index - 1)).getName_index();
+        return ((UTF8_Info) this.constant_pool.get(name_index - 1)).getValue();
+
     }
-    
+
     private void loadConstantPool(int constant_pool_count) throws IOException {
         for (int i = 1; i < constant_pool_count; i++) {
             int tag = this.readUnsignedByte();
@@ -110,32 +176,32 @@ public class ClassFile extends DataInputStream {
 
             switch (ctag) {
                 case CLASS:
-                    this.constant_pool.add(new Class_Info(ctag, 
+                    this.constant_pool.add(new Class_Info(ctag,
                             this.readUnsignedShort()));
                     break;
-                    
+
                 case FIELDREF:
                 case METHODREF:
                 case INTERFACEMETHODREF:
-                    this.constant_pool.add(new FMIref_Info(ctag, 
+                    this.constant_pool.add(new FMIref_Info(ctag,
                             this.readUnsignedShort(), this.readUnsignedShort()));
                     break;
-                    
+
                 case STRING:
-                    this.constant_pool.add(new String_Info(ctag, 
+                    this.constant_pool.add(new String_Info(ctag,
                             this.readUnsignedShort()));
                     break;
-                    
+
                 case INTEGER:
-                    this.constant_pool.add(new Integer_Info(ctag, 
+                    this.constant_pool.add(new Integer_Info(ctag,
                             this.readInt()));
                     break;
                 case FLOAT:
-                    this.constant_pool.add(new Float_Info(ctag, 
+                    this.constant_pool.add(new Float_Info(ctag,
                             this.readFloat()));
                     break;
                 case LONG:
-                    this.constant_pool.add(new Long_Info(ctag, 
+                    this.constant_pool.add(new Long_Info(ctag,
                             this.readLong()));
                     break;
                 case DOUBLE:
@@ -143,7 +209,7 @@ public class ClassFile extends DataInputStream {
                             this.readDouble()));
                     break;
                 case NAME_AND_TYPE:
-                    this.constant_pool.add(new NameAndType_Info(ctag, 
+                    this.constant_pool.add(new NameAndType_Info(ctag,
                             this.readUnsignedShort(), this.readUnsignedShort()));
                     break;
                 case UTF8:
