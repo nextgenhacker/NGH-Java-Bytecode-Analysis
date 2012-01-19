@@ -96,8 +96,10 @@ public class ClassFile extends DataInputStream {
 
                     for (int j = 0; j < exception_table_length; j++) {
                         ((Code)attribute).addExceptionTableEntry(
-                                new ExceptionTableEntry(this.readUnsignedShort(), this.readUnsignedShort(), this.readUnsignedShort(), this.readUnsignedShort()));
-
+                                new ExceptionTableEntry(this.readUnsignedShort(), 
+                                        this.readUnsignedShort(), 
+                                        this.readUnsignedShort(), 
+                                        this.readUnsignedShort()));
                     }
 
                     int att_count = this.readUnsignedShort();
@@ -125,6 +127,22 @@ public class ClassFile extends DataInputStream {
                                         this.readUnsignedShort(), 
                                         this.readUnsignedShort(), 
                                         this.readUnsignedShort()));
+                    }
+                    break;
+                case Synthetic:
+                    attribute = new Synthetic(attribute_name_index, attribute_length);
+                    break;
+                case SourceFile:
+                    attribute = new SourceFile(attribute_name_index, attribute_length, this.readUnsignedShort());
+                    break;
+                case LineNumberTable:
+                    int line_number_table_length = this.readUnsignedShort();
+                    attribute = new LineNumberTable(attribute_name_index,
+                            attribute_length, line_number_table_length);
+                    for(int j = 0; j < line_number_table_length; j++){
+                        ((LineNumberTable)attribute).addEntry(j, 
+                                this.readUnsignedShort(), 
+                                this.readUnsignedShort());
                     }
                     break;
             }
