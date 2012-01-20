@@ -107,12 +107,13 @@ public class ClassFile extends DataInputStream {
                     break;
 
                 case Exceptions:
-                    attribute = new Exceptions(attribute_name_index,
-                            attribute_length);
                     int number_of_exceptions = this.readUnsignedShort();
+                    attribute = new Exceptions(attribute_name_index,
+                            attribute_length, number_of_exceptions);
+                    
 
                     for (int j = 0; j < number_of_exceptions; j++) {
-                        ((Exceptions)attribute).addExceptionIndex(this.readUnsignedShort());
+                        ((Exceptions)attribute).addExceptionIndex(j, this.readUnsignedShort());                        
                     }
                     
                     break;
@@ -123,7 +124,7 @@ public class ClassFile extends DataInputStream {
                     int number_of_classes = this.readUnsignedShort();
                     for(int j = 0; j < number_of_classes; j++){
                         ((InnerClasses)attribute).addInnerClass(
-                                new InnerClasses.InnerClass(this.readUnsignedShort(), 
+                                new InnerClasses.Entry(this.readUnsignedShort(), 
                                         this.readUnsignedShort(), 
                                         this.readUnsignedShort(), 
                                         this.readUnsignedShort()));
@@ -145,6 +146,24 @@ public class ClassFile extends DataInputStream {
                                 this.readUnsignedShort());
                     }
                     break;
+                case LocalVariableTable:
+                    int local_variable_table_length = this.readUnsignedShort();
+                    attribute = new LocalVariableTable(attribute_name_index, 
+                            attribute_length, local_variable_table_length);
+                    for(int j = 0; j < local_variable_table_length; j++){
+                        ((LocalVariableTable)attribute).addEntry(
+                                new LocalVariableTable.Entry(
+                                        this.readUnsignedShort(), 
+                                        this.readUnsignedShort(),
+                                        this.readUnsignedShort(), 
+                                        this.readUnsignedShort(), 
+                                        this.readUnsignedShort()));
+                    }
+                    break;
+                case Deprecated:
+                    attribute = new hasnaer.java.bytecode.attribute.Deprecated(attribute_name_index, 
+                            attribute_length);
+                    break;                    
             }
             
             att_list.add(attribute);
