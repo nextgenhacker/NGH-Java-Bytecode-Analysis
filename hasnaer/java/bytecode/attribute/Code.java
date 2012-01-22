@@ -12,18 +12,18 @@ public class Code extends AttributeInfo {
     private int max_stack;
     private int max_locals;
     private byte[] code;
-    private List<ExceptionTableEntry> exception_table;
+    private List<Exceptions.Entry> exception_table;
     private List<AttributeInfo> attributes;
     
     public Code(int name_index, int attribute_length,
             int max_stack, int max_locals){
         super(name_index, attribute_length);
-        this.exception_table = new ArrayList<ExceptionTableEntry>();
+        this.exception_table = new ArrayList<Exceptions.Entry>();
         this.max_locals = max_locals;
         this.max_stack = max_stack;        
     }
     
-    public void addExceptionTableEntry(ExceptionTableEntry entry){
+    public void addExceptionTableEntry(Exceptions.Entry entry){
         this.getException_table().add(entry);
     }
 
@@ -72,14 +72,14 @@ public class Code extends AttributeInfo {
     /**
      * @return the exception_table
      */
-    public List<ExceptionTableEntry> getException_table() {
+    public List<Exceptions.Entry> getException_table() {
         return exception_table;
     }
 
     /**
      * @param exception_table the exception_table to set
      */
-    public void setException_table(List<ExceptionTableEntry> exception_table) {
+    public void setException_table(List<Exceptions.Entry> exception_table) {
         this.exception_table = exception_table;
     }
 

@@ -1,5 +1,6 @@
 package hasnaer.java.bytecode.attribute;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,8 +11,10 @@ public class InnerClasses extends AttributeInfo {
  
     private List<Entry> classes;
     
-    public InnerClasses(int name_index, int attribute_length){
+    public InnerClasses(int name_index, int attribute_length,
+            int number_of_classes){
         super(name_index, attribute_length);
+        this.classes = new ArrayList<Entry>(number_of_classes);
     }
     
     public void addInnerClass(Entry inner_class){

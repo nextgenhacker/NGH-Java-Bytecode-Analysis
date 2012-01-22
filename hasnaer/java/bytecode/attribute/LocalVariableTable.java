@@ -1,7 +1,7 @@
 package hasnaer.java.bytecode.attribute;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
 /**
  *
@@ -14,6 +14,7 @@ public class LocalVariableTable extends AttributeInfo {
     public LocalVariableTable(int attribute_name_index, 
             int attribute_length, int table_length){
         super(attribute_name_index, attribute_length);
+        this.table = new ArrayList<Entry>(table_length);
     }
     
     public void addEntry(Entry entry){

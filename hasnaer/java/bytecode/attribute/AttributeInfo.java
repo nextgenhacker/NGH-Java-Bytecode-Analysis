@@ -51,7 +51,10 @@ public abstract class AttributeInfo {
         Synthetic,
         LineNumberTable,
         LocalVariableTable,
-        Deprecated;
+        Deprecated,
+        IGNORE;
+        
+        
     }
     
 }
