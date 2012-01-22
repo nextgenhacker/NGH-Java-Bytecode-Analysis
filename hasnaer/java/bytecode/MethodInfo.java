@@ -4,7 +4,7 @@ package hasnaer.java.bytecode;
  *
  * @author hasnae rehioui
  */
-class MethodInfo extends ClassMemberInfo {
+public class MethodInfo extends ClassMemberInfo {
     
     public MethodInfo(int access_flags,
             int name_index, int descriptor_index){

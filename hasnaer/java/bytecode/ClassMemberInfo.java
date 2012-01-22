@@ -15,6 +15,9 @@ public abstract class ClassMemberInfo {
     
     private List<AttributeInfo> attributes;
     
+    private String name;
+    private String descriptor;
+    
     public ClassMemberInfo(int access_flags, 
             int name_index, int descriptor_index){
         this.access_flags = access_flags;
@@ -77,6 +80,34 @@ public abstract class ClassMemberInfo {
      */
     public void setAttributes(List<AttributeInfo> attributes) {
         this.attributes = attributes;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @return the descriptor
+     */
+    public String getDescriptor() {
+        return descriptor;
+    }
+
+    /**
+     * @param descriptor the descriptor to set
+     */
+    public void setDescriptor(String descriptor) {
+        this.descriptor = descriptor;
     }
     
     
