@@ -2,6 +2,7 @@ package hasnaer.java.bytecode;
 
 import hasnaer.java.bytecode.attribute.AttributeInfo;
 import hasnaer.java.bytecode.attribute.Code;
+import hasnaer.java.bytecode.cp.ConstantPool;
 
 /**
  *
@@ -10,8 +11,8 @@ import hasnaer.java.bytecode.attribute.Code;
 public class MethodInfo extends ClassMemberInfo {
     
     public MethodInfo(int access_flags,
-            int name_index, int descriptor_index){
-        super(access_flags, name_index, descriptor_index);
+            int name_index, int descriptor_index, ConstantPool constant_pool){
+        super(access_flags, name_index, descriptor_index, constant_pool);
     }
     
     public Code getCodeAttribute(){

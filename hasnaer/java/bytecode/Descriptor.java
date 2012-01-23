@@ -51,4 +51,17 @@ public class Descriptor {
         int index = descriptor.indexOf(")") + 1;
         return fieldDataType(descriptor.substring(index));
     }
+
+    public static int getParamCount(String descriptor) {
+        int start_index = descriptor.indexOf("(");
+        int end_index = descriptor.indexOf(")");
+        
+        String params = descriptor.substring(start_index + 1, end_index);
+        
+        if(params.length() == 0){
+            return 0;
+        }
+        
+        return params.split(";").length;
+    }
 }

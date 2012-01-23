@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.swing.JFileChooser;
 
@@ -26,9 +27,7 @@ public class ClassFile extends DataInputStream {
     }
     private int minor_version;
     private int major_version;
-
     private ConstantPool constant_pool;
-    
     private int access_flags;
     private int this_class;
     private int super_class;
@@ -137,7 +136,8 @@ public class ClassFile extends DataInputStream {
 
 
                     for (int j = 0; j < number_of_exceptions; j++) {
-                        ((Exceptions) attribute).addExceptionIndex(j, this.readUnsignedShort());
+                        ((Exceptions) attribute).addExceptionIndex(j,
+                                this.readUnsignedShort());
                     }
 
                     break;
@@ -162,7 +162,8 @@ public class ClassFile extends DataInputStream {
 
                 case SourceFile:
 //                    System.err.println("SourceFile attribute");
-                    attribute = new SourceFile(attribute_name_index, attribute_length, this.readUnsignedShort());
+                    attribute = new SourceFile(attribute_name_index, attribute_length,
+                            this.readUnsignedShort());
                     break;
 
                 case LineNumberTable:
@@ -181,7 +182,8 @@ public class ClassFile extends DataInputStream {
 //                    System.err.println("LocalVariableTable attribute");
                     int local_variable_table_length = this.readUnsignedShort();
                     attribute = new LocalVariableTable(attribute_name_index,
-                            attribute_length, local_variable_table_length);
+                            attribute_length, local_variable_table_length,
+                            constant_pool);
                     for (int j = 0; j < local_variable_table_length; j++) {
                         ((LocalVariableTable) attribute).addEntry(
                                 new LocalVariableTable.Entry(
@@ -191,6 +193,8 @@ public class ClassFile extends DataInputStream {
                                 this.readUnsignedShort(),
                                 this.readUnsignedShort()));
                     }
+                    Collections.sort(((LocalVariableTable) attribute).getTable());
+
                     break;
                 case Deprecated:
 //                    System.err.println("Deprecated attribute");
@@ -214,8 +218,8 @@ public class ClassFile extends DataInputStream {
     private void loadMethods(int methods_count) throws IOException {
         for (int i = 0; i < methods_count; i++) {
             MethodInfo method = new MethodInfo(this.readUnsignedShort(),
-                    this.readUnsignedShort(), this.readUnsignedShort());
-            
+                    this.readUnsignedShort(), this.readUnsignedShort(), constant_pool);
+
             method.setName(constant_pool.getUTF8_Info(method.getName_index()).getValue());
             method.setDescriptor(constant_pool.getUTF8_Info(method.getDescriptor_index()).getValue());
             int attribute_count = this.readUnsignedShort();
@@ -227,7 +231,7 @@ public class ClassFile extends DataInputStream {
     private void loadFields(int fields_count) throws IOException {
         for (int i = 0; i < fields_count; i++) {
             FieldInfo field = new FieldInfo(this.readUnsignedShort(),
-                    this.readUnsignedShort(), this.readUnsignedShort());
+                    this.readUnsignedShort(), this.readUnsignedShort(), constant_pool);
 
             field.setName(constant_pool.getUTF8_Info(field.getName_index()).getValue());
             field.setDescriptor(constant_pool.getUTF8_Info(field.getDescriptor_index()).getValue());
@@ -237,7 +241,6 @@ public class ClassFile extends DataInputStream {
         }
     }
 
-    
     private void loadInterfaces(int interfaces_count) throws IOException {
         for (int i = 0; i < interfaces_count; i++) {
             int index = this.readUnsignedShort();
@@ -307,29 +310,29 @@ public class ClassFile extends DataInputStream {
         return getConstant_pool().getUTF8_Info(utf).getValue().replace("/", ".");
     }
 
-    public String getSuperClassName(){
+    public String getSuperClassName() {
         int utf = getConstant_pool().getClass_Info(getSuper_class()).getName_index();
         return getConstant_pool().getUTF8_Info(utf).getValue().replace("/", ".");
     }
-    
-    public MethodInfo getMethod(String name){
-        for(MethodInfo method : methods){
-            if(method.getName().equals(name)){
+
+    public MethodInfo getMethod(String name) {
+        for (MethodInfo method : methods) {
+            if (method.getName().equals(name)) {
                 return method;
             }
         }
         return null;
     }
-    
-    public FieldInfo getField(String name){
-        for(FieldInfo field : fields){
-            if(field.getName().equals(name)){
+
+    public FieldInfo getField(String name) {
+        for (FieldInfo field : fields) {
+            if (field.getName().equals(name)) {
                 return field;
             }
         }
         return null;
     }
-    
+
     public static void main(String[] args) throws Exception {
         JFileChooser browser = new JFileChooser();
         int result = browser.showOpenDialog(null);
@@ -409,8 +412,8 @@ public class ClassFile extends DataInputStream {
     public List<AttributeInfo> getAttributes() {
         return attributes;
     }
-    
-    public boolean isInterface(){
+
+    public boolean isInterface() {
         return AccessFlags.isInterface(this.access_flags);
     }
 }

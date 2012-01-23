@@ -2,8 +2,8 @@ package hasnaer.java.bytecode;
 
 import hasnaer.java.bytecode.attribute.Code;
 import hasnaer.java.bytecode.attribute.LocalVariableTable;
-import hasnaer.java.bytecode.cp.ConstantPool;
 import java.io.FileInputStream;
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.JFileChooser;
 
@@ -51,23 +51,16 @@ public class SourceCodeBuilder {
             }
             builder.append(" ");
         }
-
         builder.append("{\n");
-
-        builder.append(visitFields(class_file.getFields(),
-                class_file.getConstant_pool()));
-
-        builder.append(visitMethods(class_file.getMethods(),
-                class_file.getConstant_pool()));
-
+        builder.append(visitFields(class_file.getFields()));
+        builder.append(visitMethods(class_file.getMethods()));
         builder.append("}");
 
 
         return builder.toString();
     }
 
-    public static String visitFields(List<FieldInfo> fields,
-            ConstantPool constant_pool) {
+    public static String visitFields(List<FieldInfo> fields) {
 
         StringBuilder builder = new StringBuilder("\n");
 
@@ -84,45 +77,64 @@ public class SourceCodeBuilder {
         return builder.toString();
     }
 
-    public static String visitMethods(List<MethodInfo> methods,
-            ConstantPool constant_pool) {
+    public static String visitMethods(List<MethodInfo> methods) {
 
         StringBuilder builder = new StringBuilder("\n");
 
         for (MethodInfo method : methods) {
 
-            builder.append(INDENT);
-            builder.append(AccessFlags.methodAccess(method.getAccess_flags()));
-            builder.append(Descriptor.getReturnDescriptor(method.getDescriptor()));
-            builder.append(method.getName());
-            builder.append("(){\n");
-            builder.append(INDENT);
-
-            builder.append("}\n\n");
+            builder.append(visitMethod(method));
 
         }
 
         return builder.toString();
     }
 
-    public static String visitMethod(MethodInfo method,
-            ConstantPool constant_pool) {
+    public static String visitMethod(MethodInfo method) {
 
         StringBuilder builder = new StringBuilder();
 
         Code code_attribute = method.getCodeAttribute();
         LocalVariableTable lvt_attribute = code_attribute.getLocalVariableTableAttribute();
-        
-        System.err.println(lvt_attribute.getTable());
-        
-        builder.append(INDENT);
-        builder.append(AccessFlags.methodAccess(method.getAccess_flags()));
-        builder.append(Descriptor.getReturnDescriptor(method.getDescriptor()));
-        builder.append(method.getName());
-        builder.append("(){\n");
-        builder.append(INDENT);
 
-        builder.append("}\n\n");
+//        System.err.println(method.getName());
+//        System.err.println(lvt_attribute);
+
+        if (lvt_attribute != null) {
+            
+//            System.err.println("doMethod");
+            lvt_attribute.init();
+
+            builder.append(INDENT);
+            builder.append(AccessFlags.methodAccess(method.getAccess_flags()));
+            builder.append(Descriptor.getReturnDescriptor(method.getDescriptor()));
+            builder.append(method.getName());
+            int numOfParameters = Descriptor.getParamCount(method.getDescriptor());
+            builder.append(" (");
+            if (numOfParameters > 0) {
+                String[] variable = lvt_attribute.getVariable(lvt_attribute.THIS_INDEX + 1);
+                builder.append(variable[0]);
+                builder.append(" ");
+                builder.append(variable[1]);
+
+                for (int i = 2; i <= numOfParameters; i++) {
+                    builder.append(", ");
+                    variable = lvt_attribute.getVariable(lvt_attribute.THIS_INDEX + i);
+                    builder.append(variable[0]);
+                    builder.append(" ");
+                    builder.append(variable[1]);
+                }
+            }
+
+            builder.append(") {\n");
+            builder.append(INDENT);
+            builder.append("}\n\n");
+            
+            
+        }
+
+
+
 
         return builder.toString();
     }
@@ -132,8 +144,10 @@ public class SourceCodeBuilder {
         int result = browser.showOpenDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
             ClassFile c_file = new ClassFile(new FileInputStream(browser.getSelectedFile()));
-//            System.err.println("this_class=" + c_file.getName());
-            System.out.println(SourceCodeBuilder.visitMethod(c_file.getMethod("visitMethod"), c_file.getConstant_pool()));
+
+//            System.out.println(SourceCodeBuilder.visitMethod(c_file.getMethod("visitMethod")));
+            System.out.println(SourceCodeBuilder.visitClass(c_file));
+
         }
 
     }

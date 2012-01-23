@@ -1,6 +1,7 @@
 package hasnaer.java.bytecode;
 
 import hasnaer.java.bytecode.attribute.AttributeInfo;
+import hasnaer.java.bytecode.cp.ConstantPool;
 import java.util.List;
 
 /**
@@ -15,15 +16,17 @@ public abstract class ClassMemberInfo {
     
     private List<AttributeInfo> attributes;
     
+    private ConstantPool constant_pool;
+    
     private String name;
     private String descriptor;
     
     public ClassMemberInfo(int access_flags, 
-            int name_index, int descriptor_index){
+            int name_index, int descriptor_index, ConstantPool constant_pool){
         this.access_flags = access_flags;
         this.name_index = name_index;
         this.descriptor_index = descriptor_index;
-        
+        this.constant_pool = constant_pool;
     }
 
     /**
