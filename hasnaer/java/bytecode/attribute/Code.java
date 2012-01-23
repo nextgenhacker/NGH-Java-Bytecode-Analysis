@@ -27,6 +27,17 @@ public class Code extends AttributeInfo {
         this.getException_table().add(entry);
     }
 
+    public LocalVariableTable getLocalVariableTableAttribute(){
+        for(AttributeInfo attribute : this.attributes){
+            if(attribute instanceof LocalVariableTable){
+                return (LocalVariableTable) attribute;
+            }
+        }
+        return null;
+    }
+    
+    
+    
     /**
      * @return the max_stack
      */

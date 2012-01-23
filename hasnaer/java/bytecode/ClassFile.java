@@ -312,6 +312,24 @@ public class ClassFile extends DataInputStream {
         return getConstant_pool().getUTF8_Info(utf).getValue().replace("/", ".");
     }
     
+    public MethodInfo getMethod(String name){
+        for(MethodInfo method : methods){
+            if(method.getName().equals(name)){
+                return method;
+            }
+        }
+        return null;
+    }
+    
+    public FieldInfo getField(String name){
+        for(FieldInfo field : fields){
+            if(field.getName().equals(name)){
+                return field;
+            }
+        }
+        return null;
+    }
+    
     public static void main(String[] args) throws Exception {
         JFileChooser browser = new JFileChooser();
         int result = browser.showOpenDialog(null);

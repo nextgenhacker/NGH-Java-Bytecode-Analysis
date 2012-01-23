@@ -21,6 +21,10 @@ public class LocalVariableTable extends AttributeInfo {
         this.table.add(entry);
     }
     
+    public List<Entry> getTable(){
+        return table;
+    }
+    
     public static class Entry {
         private int start_pc;
         private int length;
@@ -36,6 +40,17 @@ public class LocalVariableTable extends AttributeInfo {
             this.name_index = name_index;
             this.descriptor_index = descriptor_index;
             this.index = index;
+        }
+        
+        @Override
+        public String toString(){
+            StringBuilder builder = new StringBuilder();
+            builder.append("start_pc= " + start_pc);
+            builder.append("| length= " + length);
+            builder.append("| name_index= " + name_index);
+            builder.append("| des_index= " + descriptor_index);
+            builder.append("| index= " + index);
+            return builder.toString();
         }
     }
 }
