@@ -2,8 +2,8 @@ package hasnaer.java.bytecode;
 
 import hasnaer.java.bytecode.attribute.Code;
 import hasnaer.java.bytecode.attribute.LocalVariableTable;
+import hasnaer.java.bytecode.nodes.JVMNode;
 import java.io.FileInputStream;
-import java.util.Arrays;
 import java.util.List;
 import javax.swing.JFileChooser;
 
@@ -91,18 +91,14 @@ public class SourceCodeBuilder {
     }
 
     public static String visitMethod(MethodInfo method) {
-
+        
         StringBuilder builder = new StringBuilder();
 
         Code code_attribute = method.getCodeAttribute();
         LocalVariableTable lvt_attribute = code_attribute.getLocalVariableTableAttribute();
 
-//        System.err.println(method.getName());
-//        System.err.println(lvt_attribute);
-
         if (lvt_attribute != null) {
             
-//            System.err.println("doMethod");
             lvt_attribute.init();
 
             builder.append(INDENT);
@@ -127,17 +123,28 @@ public class SourceCodeBuilder {
             }
 
             builder.append(") {\n");
+            
+//            StatementBuilder st_builder = new StatementBuilder(code_attribute, 0, 
+//                    code_attribute.getCode().length, lvt_attribute);
+//            st_builder.build();
+//            List<JVMNode> statements = st_builder.getStatements();
+//            
+//            for(JVMNode statement : statements){
+//                builder.append(INDENT + INDENT);
+//                builder.append(statement.toString());
+//                builder.append(";\n");
+//            }
+            
+            
             builder.append(INDENT);
             builder.append("}\n\n");
-            
-            
+                        
         }
-
-
 
 
         return builder.toString();
     }
+
 
     public static void main(String[] args) throws Exception {
         JFileChooser browser = new JFileChooser();
@@ -145,7 +152,7 @@ public class SourceCodeBuilder {
         if (result == JFileChooser.APPROVE_OPTION) {
             ClassFile c_file = new ClassFile(new FileInputStream(browser.getSelectedFile()));
 
-//            System.out.println(SourceCodeBuilder.visitMethod(c_file.getMethod("visitMethod")));
+//            System.out.println(SourceCodeBuilder.visitMethod(c_file.getMethod("test")));
             System.out.println(SourceCodeBuilder.visitClass(c_file));
 
         }
