@@ -4,7 +4,6 @@ import hasnaer.java.bytecode.attribute.Code;
 import hasnaer.java.bytecode.attribute.LocalVariableTable;
 import hasnaer.java.bytecode.cp.CP_Info;
 import hasnaer.java.bytecode.cp.ConstantPool;
-import hasnaer.java.bytecode.cp.FMIref_Info;
 import hasnaer.java.bytecode.cp.Float_Info;
 import hasnaer.java.bytecode.cp.Integer_Info;
 import hasnaer.java.bytecode.cp.String_Info;
@@ -227,6 +226,28 @@ public class StatementBuilder {
                         System.err.println("consumeGETFIELD");
                         i = consumeGETFIELD(i);
                         break;
+                        
+                    case Opcode.ICONST_0:
+                    case Opcode.ICONST_1:
+                    case Opcode.ICONST_2:
+                    case Opcode.ICONST_3:
+                    case Opcode.ICONST_4:
+                    case Opcode.ICONST_5:
+                    case Opcode.ICONST_M1:
+                        System.err.println("consumeLOADCONST");
+                        i = consumeLOADCONST(i, opcode - Opcode.ICONST_0);
+                        break;
+             
+                    case Opcode.LCONST_0:
+                    case Opcode.LCONST_1:
+                        System.err.println("consumeLOADCONST");
+                        i = consumeLOADCONST(i, (long)(opcode - Opcode.LCONST_0));
+                        break;
+                        
+                    case Opcode.ACONST_NULL:
+                        System.err.println("consumeLOADNULLCONST");
+                        i = consumeLOADNULLCONST(i);
+                        break;
                 }
             }
 
@@ -236,6 +257,16 @@ public class StatementBuilder {
         return statements;
     }
 
+    private int consumeLOADNULLCONST(int pos){
+        stack.push(new ReferenceNode("null", "null"));
+        return pos + 1;
+    }
+    
+    private int consumeLOADCONST(int pos, Object value){
+        stack.push(new PrimitiveNode(PrimitiveNode.Type.INT, value.toString()));
+        return pos + 1;
+    }
+    
     private int consumeGETFIELD(int pos){
 
         int index = unsignedShortAt(pos + 1);

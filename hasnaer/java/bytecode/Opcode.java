@@ -6,7 +6,18 @@ package hasnaer.java.bytecode;
  */
 public class Opcode {
 
-
+    public static final int ACONST_NULL = 0x01;
+    public static final int ICONST_M1 = 0x02;
+    public static final int ICONST_0 = 0x03;
+    public static final int ICONST_1 = 0x04;
+    public static final int ICONST_2 = 0x05;
+    public static final int ICONST_3 = 0x06;
+    public static final int ICONST_4 = 0x07;
+    public static final int ICONST_5 = 0x08;
+    
+    public static final int LCONST_0 = 0x09;
+    public static final int LCONST_1 = 0x0a;
+    
     public static final int BIPUSH = 0x10;
 
     public static final int LDC = 0x12;
