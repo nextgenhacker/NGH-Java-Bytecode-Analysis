@@ -203,14 +203,30 @@ public class StatementBuilder {
                         i = consumeLOADPRIMITIVE(i + 1, code()[i + 1]);
                         break;
 
+                    case Opcode.ALOAD:
+                        System.err.println("consumeLOADREFERENCE");
+                        i = consumeLOADREFERENCE(i + 1, code()[i + 1]);
+                        break;
+                        
                     case Opcode.INVOKEVIRTUAL:
+                        System.err.println("consumeINVOKEMETHOD");
                         i = consumeINVOKEMETHOD(i);
                         break;
 
                     case Opcode.GETSTATIC:
+                        System.err.println("consumeGETSTATIC");
                         i = consumeGETSTATIC(i);
                         break;
 
+                    case Opcode.PUTFIELD:
+                        System.err.println("consumePUTFIELD");
+                        i = consumePUTFIELD(i);
+                        break;
+
+                    case Opcode.GETFIELD:
+                        System.err.println("consumeGETFIELD");
+                        i = consumeGETFIELD(i);
+                        break;
                 }
             }
 
@@ -218,6 +234,42 @@ public class StatementBuilder {
         }
 
         return statements;
+    }
+
+    private int consumeGETFIELD(int pos){
+
+        int index = unsignedShortAt(pos + 1);
+
+        String class_name = pool().getFMIref_ClassName(index);
+        String[] type_name = pool().getFMIref_Name_And_Type(index);
+
+        FieldNode field = new FieldNode(class_name.replace('/', '.'), type_name[1],
+                type_name[0], false);
+
+        JVMNode node = stack.pop();
+
+        stack.push(new InvocationNode(node, field));
+        
+        return pos + 3;
+    }
+
+    private int consumePUTFIELD(int pos){
+
+        int index = unsignedShortAt(pos + 1);
+        
+        String class_name = pool().getFMIref_ClassName(index);
+        String[] type_name = pool().getFMIref_Name_And_Type(index);
+
+        FieldNode field = new FieldNode(class_name.replace('/', '.'), type_name[1],
+                type_name[0], false);
+
+        ValueNode value = (ValueNode) stack.pop();
+        JVMNode node = stack.pop();
+
+        statements.add(new AssignNode(new InvocationNode(node, field), value, AssignNode.Type.NONFIRST));
+
+
+        return pos + 3;
     }
 
     private int consumeGETSTATIC(int pos) {
