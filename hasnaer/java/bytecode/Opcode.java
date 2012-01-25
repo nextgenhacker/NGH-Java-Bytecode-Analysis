@@ -76,6 +76,9 @@ public class Opcode {
 
     public static final int DUP = 0x59;
     public static final int RETURN = 0xb1;
+    public static final int GETSTATIC = 0xb2;
+    
+    public static final int INVOKEVIRTUAL = 0xb6;
     public static final int INVOKESPECIAL = 0xb7;
     public static final int NEW = 0xbb;
 

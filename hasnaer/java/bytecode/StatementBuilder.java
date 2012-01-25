@@ -9,6 +9,7 @@ import hasnaer.java.bytecode.cp.Float_Info;
 import hasnaer.java.bytecode.cp.Integer_Info;
 import hasnaer.java.bytecode.cp.String_Info;
 import hasnaer.java.bytecode.nodes.AssignNode;
+import hasnaer.java.bytecode.nodes.FieldNode;
 import hasnaer.java.bytecode.nodes.InvocationNode;
 import hasnaer.java.bytecode.nodes.JVMNode;
 import hasnaer.java.bytecode.nodes.MethodNode;
@@ -202,6 +203,14 @@ public class StatementBuilder {
                         i = consumeLOADPRIMITIVE(i + 1, code()[i + 1]);
                         break;
 
+                    case Opcode.INVOKEVIRTUAL:
+                        i = consumeINVOKEMETHOD(i);
+                        break;
+
+                    case Opcode.GETSTATIC:
+                        i = consumeGETSTATIC(i);
+                        break;
+
                 }
             }
 
@@ -211,12 +220,27 @@ public class StatementBuilder {
         return statements;
     }
 
-    private int consumeLOADREFERENCE(int pos, int index){
+    private int consumeGETSTATIC(int pos) {
+
+        int index = unsignedShortAt(pos + 1);
+        String class_name = pool().getFMIref_ClassName(index);
+        String[] type_name = pool().getFMIref_Name_And_Type(index);
+
+        FieldNode field = new FieldNode(class_name.replace('/', '.'), type_name[1],
+                type_name[0], true);
+
+        stack.push(field);
+
+        
+        return pos + 3;
+    }
+
+    private int consumeLOADREFERENCE(int pos, int index) {
         String[] type_name = lvt_attribute.getVariable(index);
         stack.push(new ReferenceNode(type_name[0], type_name[1]));
         return pos + 1;
     }
-    
+
     private int consumeLOADPRIMITIVE(int pos, int index) {
 
         String[] type_name = lvt_attribute.getVariable(index);

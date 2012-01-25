@@ -4,13 +4,14 @@ package hasnaer.java.bytecode.nodes;
  *
  * @author hasnae rehioui
  */
-public abstract class InvocableNode implements JVMNode {
+public abstract class InvocableNode extends ValueNode {
 
     protected String name;
     protected String class_name;
     protected String type;
 
     public InvocableNode(String class_name, String name, String type){
+        super(type, name);
         this.class_name = class_name;
         this.name = name;
         this.type = type;
