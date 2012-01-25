@@ -12,5 +12,8 @@ public class String_Info extends CP_Info {
         super(ctag);
         this.string_index = string_index;
     }
-    
+
+    public int getString_Index(){
+        return string_index;
+    }
 }

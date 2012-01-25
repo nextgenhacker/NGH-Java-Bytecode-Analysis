@@ -19,5 +19,12 @@ public class FMIref_Info extends CP_Info {
         this.class_index = class_index;
         this.name_and_type_index = name_and_type_index;
     }
-    
+
+    public int getName_And_Type_Index(){
+        return name_and_type_index;
+    }
+
+    public int getClass_Index(){
+        return class_index;
+    }
 }

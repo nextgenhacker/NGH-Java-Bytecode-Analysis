@@ -91,14 +91,22 @@ public class SourceCodeBuilder {
     }
 
     public static String visitMethod(MethodInfo method) {
-        
+
+
+
+
         StringBuilder builder = new StringBuilder();
 
         Code code_attribute = method.getCodeAttribute();
         LocalVariableTable lvt_attribute = code_attribute.getLocalVariableTableAttribute();
 
+        System.err.println("constant_pool= ");
+        System.err.println(lvt_attribute.getConstantPool().toString());
+
+
+
         if (lvt_attribute != null) {
-            
+
             lvt_attribute.init();
 
             builder.append(INDENT);
@@ -123,28 +131,27 @@ public class SourceCodeBuilder {
             }
 
             builder.append(") {\n");
-            
-//            StatementBuilder st_builder = new StatementBuilder(code_attribute, 0, 
-//                    code_attribute.getCode().length, lvt_attribute);
-//            st_builder.build();
-//            List<JVMNode> statements = st_builder.getStatements();
-//            
-//            for(JVMNode statement : statements){
-//                builder.append(INDENT + INDENT);
-//                builder.append(statement.toString());
-//                builder.append(";\n");
-//            }
-            
-            
+
+            StatementBuilder st_builder = new StatementBuilder(code_attribute, 0,
+                    code_attribute.getCode().length, lvt_attribute);
+            st_builder.build();
+            List<JVMNode> statements = st_builder.getStatements();
+
+            for (JVMNode statement : statements) {
+                builder.append(INDENT + INDENT);
+                builder.append(statement.toString());
+                builder.append(";\n");
+            }
+
+
             builder.append(INDENT);
             builder.append("}\n\n");
-                        
+
         }
 
 
         return builder.toString();
     }
-
 
     public static void main(String[] args) throws Exception {
         JFileChooser browser = new JFileChooser();
@@ -152,8 +159,9 @@ public class SourceCodeBuilder {
         if (result == JFileChooser.APPROVE_OPTION) {
             ClassFile c_file = new ClassFile(new FileInputStream(browser.getSelectedFile()));
 
-//            System.out.println(SourceCodeBuilder.visitMethod(c_file.getMethod("test")));
-            System.out.println(SourceCodeBuilder.visitClass(c_file));
+
+            System.err.println("\n\n" + SourceCodeBuilder.visitMethod(c_file.getMethod("test")));
+//            System.out.println(SourceCodeBuilder.visitClass(c_file));
 
         }
 

@@ -11,6 +11,10 @@ public abstract class CP_Info {
     public CP_Info(Tag tag){
         this.tag = tag;
     }
+
+    public Tag getTag(){
+        return tag;
+    }
     
     public enum Tag {
         CLASS(7),
@@ -38,5 +42,9 @@ public abstract class CP_Info {
             }
             return null;
         }
+    }
+
+    public String toString(){
+        return tag.toString();
     }
 }

@@ -12,5 +12,12 @@ public class Integer_Info extends CP_Info {
         super(ctag);
         this.value = value;
     }
-    
+
+    public int getIntValue(){
+        return value;
+    }
+
+    public String getStringValue(){
+        return Integer.toString(value);
+    }
 }

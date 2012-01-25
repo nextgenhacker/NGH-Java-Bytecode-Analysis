@@ -40,6 +40,10 @@ public class LocalVariableTable extends AttributeInfo {
         return table;
     }
     
+    public ConstantPool getConstantPool(){
+        return this.constant_pool;
+    }
+
     public String[] getVariable(int index){
         String[] type_and_name = new String[2];
         

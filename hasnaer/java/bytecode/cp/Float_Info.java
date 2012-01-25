@@ -12,5 +12,12 @@ public class Float_Info extends CP_Info {
         super(ctag);
         this.value = value;
     }
-    
+
+    public float getFloatValue(){
+        return value;
+    }
+
+    public String getStringValue(){
+        return Float.toString(value);
+    }
 }

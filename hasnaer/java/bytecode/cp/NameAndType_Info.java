@@ -14,5 +14,12 @@ public class NameAndType_Info extends CP_Info {
         this.name_index = name_index;
         this.descriptor_index = descriptor_index;
     }
-    
+
+    public int getName_Index(){
+        return name_index;
+    }
+
+    public int getDescriptor_Index(){
+        return descriptor_index;
+    }
 }
