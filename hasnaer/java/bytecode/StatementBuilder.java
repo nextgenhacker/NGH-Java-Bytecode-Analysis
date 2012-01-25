@@ -144,6 +144,64 @@ public class StatementBuilder {
                         System.err.println("consumeINVOKESPECIAL");
                         i = consumeINVOKEMETHOD(i);
                         break;
+
+                    case Opcode.ISTORE:
+                    case Opcode.LSTORE:
+                    case Opcode.FSTORE:
+                    case Opcode.DSTORE:
+                    case Opcode.ASTORE:
+                        System.err.println("consumeSTOREVARIABLE");
+                        i = consumeSTOREVARIABLE(i + 1, code()[i + 1]);
+                        break;
+
+                    case Opcode.ILOAD_0:
+                    case Opcode.ILOAD_1:
+                    case Opcode.ILOAD_2:
+                    case Opcode.ILOAD_3:
+                        System.err.println("consumeLOADPRIMITIVE");
+                        i = consumeLOADPRIMITIVE(i, opcode - Opcode.ILOAD_0);
+                        break;
+
+                    case Opcode.FLOAD_0:
+                    case Opcode.FLOAD_1:
+                    case Opcode.FLOAD_2:
+                    case Opcode.FLOAD_3:
+                        System.err.println("consumeLOADPRIMITIVE");
+                        i = consumeLOADPRIMITIVE(i, opcode - Opcode.FLOAD_0);
+                        break;
+
+                    case Opcode.DLOAD_0:
+                    case Opcode.DLOAD_1:
+                    case Opcode.DLOAD_2:
+                    case Opcode.DLOAD_3:
+                        System.err.println("consumeLOADPRIMITIVE");
+                        i = consumeLOADPRIMITIVE(i, opcode - Opcode.DLOAD_0);
+                        break;
+
+                    case Opcode.LLOAD_0:
+                    case Opcode.LLOAD_1:
+                    case Opcode.LLOAD_2:
+                    case Opcode.LLOAD_3:
+                        System.err.println("consumeLOADPRIMITIVE");
+                        i = consumeLOADPRIMITIVE(i, opcode - Opcode.LLOAD_0);
+                        break;
+
+                    case Opcode.ALOAD_0:
+                    case Opcode.ALOAD_1:
+                    case Opcode.ALOAD_2:
+                    case Opcode.ALOAD_3:
+                        System.err.println("consumeLOADREFERENCE");
+                        i = consumeLOADREFERENCE(i, opcode - Opcode.ALOAD_0);
+                        break;
+
+                    case Opcode.ILOAD:
+                    case Opcode.LLOAD:
+                    case Opcode.DLOAD:
+                    case Opcode.FLOAD:
+                        System.err.println("consumeLOADPRIMITIVE");
+                        i = consumeLOADPRIMITIVE(i + 1, code()[i + 1]);
+                        break;
+
                 }
             }
 
@@ -151,6 +209,19 @@ public class StatementBuilder {
         }
 
         return statements;
+    }
+
+    private int consumeLOADREFERENCE(int pos, int index){
+        String[] type_name = lvt_attribute.getVariable(index);
+        stack.push(new ReferenceNode(type_name[0], type_name[1]));
+        return pos + 1;
+    }
+    
+    private int consumeLOADPRIMITIVE(int pos, int index) {
+
+        String[] type_name = lvt_attribute.getVariable(index);
+        stack.push(new PrimitiveNode(type_name[0], type_name[1]));
+        return pos + 1;
     }
 
     private int consumeINVOKEMETHOD(int pos) {
@@ -249,11 +320,10 @@ public class StatementBuilder {
 
         if (value instanceof PrimitiveNode) {
             variable = new PrimitiveNode(type_name[0], type_name[1]);
-        }
-        else{
+        } else {
             variable = new ReferenceNode(type_name[0], type_name[1]);
         }
-        
+
         AssignNode assign = new AssignNode(variable, value, atype);
         statements.add(assign);
 

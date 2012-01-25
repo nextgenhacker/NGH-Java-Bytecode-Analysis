@@ -100,8 +100,8 @@ public class SourceCodeBuilder {
         Code code_attribute = method.getCodeAttribute();
         LocalVariableTable lvt_attribute = code_attribute.getLocalVariableTableAttribute();
 
-        System.err.println("constant_pool= ");
-        System.err.println(lvt_attribute.getConstantPool().toString());
+//        System.err.println("constant_pool= ");
+//        System.err.println(lvt_attribute.getConstantPool().toString());
 
 
 
