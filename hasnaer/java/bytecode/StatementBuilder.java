@@ -148,7 +148,7 @@ public class StatementBuilder {
                         System.err.println("consumeLDC");
                         i = consumeLDC(i + 1, unsignedShortAt(i + 1));
                         break;
-                        
+
                     case Opcode.INVOKESPECIAL:
                         System.err.println("consumeINVOKESPECIAL");
                         i = consumeINVOKEMETHOD(i);
@@ -215,7 +215,7 @@ public class StatementBuilder {
                         System.err.println("consumeLOADREFERENCE");
                         i = consumeLOADREFERENCE(i + 1, code()[i + 1]);
                         break;
-                        
+
                     case Opcode.INVOKEVIRTUAL:
                         System.err.println("consumeINVOKEMETHOD");
                         i = consumeINVOKEMETHOD(i);
@@ -235,7 +235,7 @@ public class StatementBuilder {
                         System.err.println("consumeGETFIELD");
                         i = consumeGETFIELD(i);
                         break;
-                        
+
                     case Opcode.ICONST_0:
                     case Opcode.ICONST_1:
                     case Opcode.ICONST_2:
@@ -246,18 +246,18 @@ public class StatementBuilder {
                         System.err.println("consumeLOADCONST");
                         i = consumeLOADCONST(i, opcode - Opcode.ICONST_0);
                         break;
-             
+
                     case Opcode.LCONST_0:
                     case Opcode.LCONST_1:
                         System.err.println("consumeLOADCONST");
-                        i = consumeLOADCONST(i, (long)(opcode - Opcode.LCONST_0));
+                        i = consumeLOADCONST(i, (long) (opcode - Opcode.LCONST_0));
                         break;
-                        
+
                     case Opcode.ACONST_NULL:
                         System.err.println("consumeLOADNULLCONST");
                         i = consumeLOADNULLCONST(i);
                         break;
-                        
+
                     case Opcode.IADD:
                     case Opcode.FADD:
                     case Opcode.DADD:
@@ -265,7 +265,7 @@ public class StatementBuilder {
                         System.err.println("consumeOPERATION");
                         i = consumeOPERATION(i, OperationNode.Type.ADD);
                         break;
-                        
+
                     case Opcode.ISUB:
                     case Opcode.LSUB:
                     case Opcode.DSUB:
@@ -273,7 +273,7 @@ public class StatementBuilder {
                         System.err.println("consumeOPERATION");
                         i = consumeOPERATION(i, OperationNode.Type.SUB);
                         break;
-                        
+
                     case Opcode.IDIV:
                     case Opcode.LDIV:
                     case Opcode.DDIV:
@@ -281,7 +281,7 @@ public class StatementBuilder {
                         System.err.println("consumeOPERATION");
                         i = consumeOPERATION(i, OperationNode.Type.DIV);
                         break;
-                        
+
                     case Opcode.IMUL:
                     case Opcode.FMUL:
                     case Opcode.DMUL:
@@ -289,7 +289,7 @@ public class StatementBuilder {
                         System.err.println("consumeOPERATION");
                         i = consumeOPERATION(i, OperationNode.Type.MUL);
                         break;
-                        
+
                     case Opcode.IREM:
                     case Opcode.FREM:
                     case Opcode.DREM:
@@ -297,7 +297,45 @@ public class StatementBuilder {
                         System.err.println("consumeOPERATION");
                         i = consumeOPERATION(i, OperationNode.Type.REM);
                         break;
-                            
+
+                    case Opcode.IOR:
+                    case Opcode.LOR:
+                        System.err.println("consumeOPERATION");
+                        i = consumeOPERATION(i, OperationNode.Type.OR);
+                        break;
+
+                    case Opcode.IXOR:
+                    case Opcode.LXOR:
+                        System.err.println("consumeOPERATION");
+                        i = consumeOPERATION(i, OperationNode.Type.XOR);
+                        break;
+                        
+                    case Opcode.IAND:
+                    case Opcode.LAND:
+                        System.err.println("consumeOPERATION");
+                        i = consumeOPERATION(i, OperationNode.Type.AND);
+                        break;
+                        
+                    case Opcode.ISHL:
+                    case Opcode.LSHL:
+                        System.err.println("consumeOPERATION");
+                        i = consumeOPERATION(i, OperationNode.Type.LSH);
+                        break;
+                        
+                    case Opcode.ISHR:
+                    case Opcode.LSHR:
+                        System.err.println("consumeOPERATION");
+                        i = consumeOPERATION(i, OperationNode.Type.RSH);
+                        break;
+                        
+                    case Opcode.SIPUSH:
+                        System.err.println("consumeSIPUSH");
+                        i = consumeSIPUSH(i);
+                        break;
+                    case Opcode.POP:
+                        System.err.println("consumePOP");
+                        i = consumePOP(i);
+                        break;
                 }
             }
 
@@ -306,27 +344,40 @@ public class StatementBuilder {
 
         return statements;
     }
-
-    private int consumeOPERATION(int pos, OperationNode.Type type){
-        ValueNode right = (ValueNode) stack.pop();
-        ValueNode left = (ValueNode) stack.pop();
-        
-        stack.push(new OperationNode(left, right, type));
-        
+    
+    private int consumePOP(int pos){
+        if(!stack.isEmpty()){
+            statements.add(stack.pop());
+        }
         return pos + 1;
     }
+
+    private int consumeSIPUSH(int pos){
+        short value = (short) signedShortAt(pos + 1);
+        stack.push(new PrimitiveNode(PrimitiveNode.Type.SHORT, Short.toString(value)));
+        return pos + 3;
+    }
     
-    private int consumeLOADNULLCONST(int pos){
+    private int consumeOPERATION(int pos, OperationNode.Type type) {
+        ValueNode right = (ValueNode) stack.pop();
+        ValueNode left = (ValueNode) stack.pop();
+
+        stack.push(new OperationNode(left, right, type));
+
+        return pos + 1;
+    }
+
+    private int consumeLOADNULLCONST(int pos) {
         stack.push(new ReferenceNode("null", "null"));
         return pos + 1;
     }
-    
-    private int consumeLOADCONST(int pos, Object value){
+
+    private int consumeLOADCONST(int pos, Object value) {
         stack.push(new PrimitiveNode(PrimitiveNode.Type.INT, value.toString()));
         return pos + 1;
     }
-    
-    private int consumeGETFIELD(int pos){
+
+    private int consumeGETFIELD(int pos) {
 
         int index = unsignedShortAt(pos + 1);
 
@@ -339,14 +390,14 @@ public class StatementBuilder {
         JVMNode node = stack.pop();
 
         stack.push(new InvocationNode(node, field));
-        
+
         return pos + 3;
     }
 
-    private int consumePUTFIELD(int pos){
+    private int consumePUTFIELD(int pos) {
 
         int index = unsignedShortAt(pos + 1);
-        
+
         String class_name = pool().getFMIref_ClassName(index);
         String[] type_name = pool().getFMIref_Name_And_Type(index);
 
@@ -373,7 +424,7 @@ public class StatementBuilder {
 
         stack.push(field);
 
-        
+
         return pos + 3;
     }
 
@@ -458,9 +509,12 @@ public class StatementBuilder {
     }
 
     private int unsignedShortAt(int pos) {
-        return (code()[pos] << 8) + code()[pos + 1];
+        return ((code()[pos] & 0xFF) << 8) + (code()[pos + 1] & 0xFF);
     }
 
+    private int signedShortAt(int pos){
+        return (code()[pos] << 8) + (code()[pos + 1] & 0xFF);
+    }
     private int consumeNEW(int pos) {
 
         int index = unsignedShortAt(pos + 1);
