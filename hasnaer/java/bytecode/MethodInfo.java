@@ -2,6 +2,7 @@ package hasnaer.java.bytecode;
 
 import hasnaer.java.bytecode.attribute.AttributeInfo;
 import hasnaer.java.bytecode.attribute.Code;
+import hasnaer.java.bytecode.attribute.Exceptions;
 import hasnaer.java.bytecode.cp.ConstantPool;
 
 /**
@@ -19,6 +20,15 @@ public class MethodInfo extends ClassMemberInfo {
         for(AttributeInfo attribute : this.getAttributes()){
             if(attribute instanceof Code){
                 return (Code)  attribute;
+            }
+        }
+        return null;
+    }
+
+    public Exceptions getExceptionsAttibute(){
+        for(AttributeInfo attribute : getAttributes()){
+            if(attribute instanceof Exceptions){
+                return (Exceptions) attribute;
             }
         }
         return null;

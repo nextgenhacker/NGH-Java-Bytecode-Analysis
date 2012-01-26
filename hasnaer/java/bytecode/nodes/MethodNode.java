@@ -10,10 +10,12 @@ import java.util.List;
 public class MethodNode extends InvocableNode {
 
     private List<JVMNode> params;
+    private boolean isStatic;
     
-    public MethodNode(String class_name, String name, String type){
+    public MethodNode(String class_name, String name, String type, boolean isStatic){
         super(class_name, name, type);
         this.params = new LinkedList<JVMNode>();
+        this.isStatic = isStatic;
     }
 
     public void addParam(JVMNode param){
@@ -34,6 +36,9 @@ public class MethodNode extends InvocableNode {
 
         if(isConstructor()){
             builder.append(" ");
+            builder.append(class_name);
+        }
+        else if(isStatic){
             builder.append(class_name);
         }
         else{

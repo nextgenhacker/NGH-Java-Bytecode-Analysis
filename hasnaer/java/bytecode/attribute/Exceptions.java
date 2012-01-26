@@ -27,6 +27,10 @@ public class Exceptions extends AttributeInfo {
         this.exception_index_table.add(exception_index);
     }
 
+    public int[] getTable(){
+        return table;
+    }
+    
     public static class Entry {
 
         private int start_pc;

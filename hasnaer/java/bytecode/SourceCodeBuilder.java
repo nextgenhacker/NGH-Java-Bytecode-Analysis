@@ -1,6 +1,7 @@
 package hasnaer.java.bytecode;
 
 import hasnaer.java.bytecode.attribute.Code;
+import hasnaer.java.bytecode.attribute.Exceptions;
 import hasnaer.java.bytecode.attribute.LocalVariableTable;
 import hasnaer.java.bytecode.nodes.JVMNode;
 import java.io.FileInputStream;
@@ -56,7 +57,6 @@ public class SourceCodeBuilder {
         builder.append(visitMethods(class_file.getMethods()));
         builder.append("}");
 
-
         return builder.toString();
     }
 
@@ -71,20 +71,15 @@ public class SourceCodeBuilder {
             builder.append(Descriptor.fieldDataType(field.getDescriptor()));
             builder.append(field.getName());
             builder.append(";\n");
-
         }
-
         return builder.toString();
     }
 
     public static String visitMethods(List<MethodInfo> methods) {
 
         StringBuilder builder = new StringBuilder("\n");
-
         for (MethodInfo method : methods) {
-
             builder.append(visitMethod(method));
-
         }
 
         return builder.toString();
@@ -92,18 +87,14 @@ public class SourceCodeBuilder {
 
     public static String visitMethod(MethodInfo method) {
 
-
-
-
         StringBuilder builder = new StringBuilder();
 
         Code code_attribute = method.getCodeAttribute();
         LocalVariableTable lvt_attribute = code_attribute.getLocalVariableTableAttribute();
+        Exceptions exc_attribute = method.getExceptionsAttibute();
 
 //        System.err.println("constant_pool= ");
 //        System.err.println(lvt_attribute.getConstantPool().toString());
-
-
 
         if (lvt_attribute != null) {
 
@@ -130,25 +121,37 @@ public class SourceCodeBuilder {
                 }
             }
 
-            builder.append(") {\n");
-
-            StatementBuilder st_builder = new StatementBuilder(code_attribute, 0,
-                    code_attribute.getCode().length, lvt_attribute);
-            st_builder.build();
-            List<JVMNode> statements = st_builder.getStatements();
-
-            for (JVMNode statement : statements) {
-                builder.append(INDENT + INDENT);
-                builder.append(statement.toString());
-                builder.append(";\n");
+            builder.append(") ");
+            
+            if(exc_attribute != null){
+                int[] exc_ = exc_attribute.getTable();
+                if(exc_.length > 0){
+                    builder.append("throws ");
+                    
+                }
             }
 
+            builder.append("{\n");
+
+            try {
+                StatementBuilder st_builder = new StatementBuilder(code_attribute, 0,
+                        code_attribute.getCode().length, lvt_attribute);
+                st_builder.build();
+                List<JVMNode> statements = st_builder.getStatements();
+
+                for (JVMNode statement : statements) {
+                    builder.append(INDENT + INDENT);
+                    builder.append(statement.toString());
+                    builder.append(";\n");
+                }
+            } catch (Exception ex) {
+                
+            }
 
             builder.append(INDENT);
             builder.append("}\n\n");
 
         }
-
 
         return builder.toString();
     }
@@ -158,11 +161,8 @@ public class SourceCodeBuilder {
         int result = browser.showOpenDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
             ClassFile c_file = new ClassFile(new FileInputStream(browser.getSelectedFile()));
-
-
             System.err.println("\n\n" + SourceCodeBuilder.visitMethod(c_file.getMethod("test")));
 //            System.out.println(SourceCodeBuilder.visitClass(c_file));
-
         }
 
     }
