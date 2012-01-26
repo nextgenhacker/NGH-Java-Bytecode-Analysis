@@ -12,5 +12,12 @@ public class Double_Info extends CP_Info {
         super(ctag);
         this.value = value;
     }
+
+    public double getDoubleValue(){
+        return value;
+    }
     
+    public String getStringValue(){
+        return Double.toString(value);
+    }
 }

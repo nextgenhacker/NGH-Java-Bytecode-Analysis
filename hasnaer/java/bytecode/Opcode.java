@@ -21,7 +21,9 @@ public class Opcode {
     public static final int BIPUSH = 0x10;
 
     public static final int LDC = 0x12;
-
+    public static final int LDC_W = 0x13;
+    public static final int LDC2_W = 0x14;
+    
     public static final int ILOAD = 0x15;
     public static final int LLOAD = 0x16;
     public static final int FLOAD = 0x17;
@@ -53,7 +55,7 @@ public class Opcode {
     public static final int ALOAD_1 = 0x2b;
     public static final int ALOAD_2 = 0x2c;
     public static final int ALOAD_3 = 0x2d;
-
+        
     public static final int ISTORE = 0x36;
     public static final int LSTORE = 0x37;
     public static final int FSTORE = 0x38;
@@ -85,7 +87,35 @@ public class Opcode {
     public static final int ASTORE_2 = 0x4d;
     public static final int ASTORE_3 = 0x4e;
 
+
     public static final int DUP = 0x59;
+    
+    public static final int IADD = 0x60;
+    public static final int LADD = 0x61;
+    public static final int FADD = 0x62;
+    public static final int DADD = 0x63;
+    
+    public static final int ISUB = 0x64;
+    public static final int LSUB = 0x65;
+    public static final int FSUB = 0x66;
+    public static final int DSUB = 0x67;
+    
+    public static final int IMUL = 0x68;
+    public static final int LMUL = 0x69;
+    public static final int FMUL = 0x6a;
+    public static final int DMUL = 0x6b;
+    
+    public static final int IDIV = 0x6c;
+    public static final int LDIV = 0x6d;
+    public static final int FDIV = 0x6e;
+    public static final int DDIV = 0x6f;
+    
+    public static final int IREM = 0x70;
+    public static final int LREM = 0x71;
+    public static final int FREM = 0x72;
+    public static final int DREM = 0x73;
+            
+    
     public static final int RETURN = 0xb1;
     public static final int GETSTATIC = 0xb2;
 

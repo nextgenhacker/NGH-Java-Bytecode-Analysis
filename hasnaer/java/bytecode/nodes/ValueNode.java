@@ -13,4 +13,12 @@ public abstract class ValueNode implements JVMNode {
         this.type = type;
         this.name = name;
     }
+    
+    public String getType(){
+        return this.type;
+    }
+    
+    public String getName(){
+        return this.name;
+    }
 }

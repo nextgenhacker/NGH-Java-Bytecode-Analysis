@@ -4,14 +4,17 @@ import hasnaer.java.bytecode.attribute.Code;
 import hasnaer.java.bytecode.attribute.LocalVariableTable;
 import hasnaer.java.bytecode.cp.CP_Info;
 import hasnaer.java.bytecode.cp.ConstantPool;
+import hasnaer.java.bytecode.cp.Double_Info;
 import hasnaer.java.bytecode.cp.Float_Info;
 import hasnaer.java.bytecode.cp.Integer_Info;
+import hasnaer.java.bytecode.cp.Long_Info;
 import hasnaer.java.bytecode.cp.String_Info;
 import hasnaer.java.bytecode.nodes.AssignNode;
 import hasnaer.java.bytecode.nodes.FieldNode;
 import hasnaer.java.bytecode.nodes.InvocationNode;
 import hasnaer.java.bytecode.nodes.JVMNode;
 import hasnaer.java.bytecode.nodes.MethodNode;
+import hasnaer.java.bytecode.nodes.OperationNode;
 import hasnaer.java.bytecode.nodes.PrimitiveNode;
 import hasnaer.java.bytecode.nodes.ReferenceNode;
 import hasnaer.java.bytecode.nodes.ValueNode;
@@ -140,6 +143,12 @@ public class StatementBuilder {
                         i = consumeLDC(i, code()[i + 1]);
                         break;
 
+                    case Opcode.LDC_W:
+                    case Opcode.LDC2_W:
+                        System.err.println("consumeLDC");
+                        i = consumeLDC(i + 1, unsignedShortAt(i + 1));
+                        break;
+                        
                     case Opcode.INVOKESPECIAL:
                         System.err.println("consumeINVOKESPECIAL");
                         i = consumeINVOKEMETHOD(i);
@@ -248,6 +257,47 @@ public class StatementBuilder {
                         System.err.println("consumeLOADNULLCONST");
                         i = consumeLOADNULLCONST(i);
                         break;
+                        
+                    case Opcode.IADD:
+                    case Opcode.FADD:
+                    case Opcode.DADD:
+                    case Opcode.LADD:
+                        System.err.println("consumeOPERATION");
+                        i = consumeOPERATION(i, OperationNode.Type.ADD);
+                        break;
+                        
+                    case Opcode.ISUB:
+                    case Opcode.LSUB:
+                    case Opcode.DSUB:
+                    case Opcode.FSUB:
+                        System.err.println("consumeOPERATION");
+                        i = consumeOPERATION(i, OperationNode.Type.SUB);
+                        break;
+                        
+                    case Opcode.IDIV:
+                    case Opcode.LDIV:
+                    case Opcode.DDIV:
+                    case Opcode.FDIV:
+                        System.err.println("consumeOPERATION");
+                        i = consumeOPERATION(i, OperationNode.Type.DIV);
+                        break;
+                        
+                    case Opcode.IMUL:
+                    case Opcode.FMUL:
+                    case Opcode.DMUL:
+                    case Opcode.LMUL:
+                        System.err.println("consumeOPERATION");
+                        i = consumeOPERATION(i, OperationNode.Type.MUL);
+                        break;
+                        
+                    case Opcode.IREM:
+                    case Opcode.FREM:
+                    case Opcode.DREM:
+                    case Opcode.LREM:
+                        System.err.println("consumeOPERATION");
+                        i = consumeOPERATION(i, OperationNode.Type.REM);
+                        break;
+                            
                 }
             }
 
@@ -257,6 +307,15 @@ public class StatementBuilder {
         return statements;
     }
 
+    private int consumeOPERATION(int pos, OperationNode.Type type){
+        ValueNode right = (ValueNode) stack.pop();
+        ValueNode left = (ValueNode) stack.pop();
+        
+        stack.push(new OperationNode(left, right, type));
+        
+        return pos + 1;
+    }
+    
     private int consumeLOADNULLCONST(int pos){
         stack.push(new ReferenceNode("null", "null"));
         return pos + 1;
@@ -357,8 +416,6 @@ public class StatementBuilder {
 
     private int consumeLDC(int pos, int index) {
 
-
-
         CP_Info cp_info = pool().getCP_Info(index);
         System.err.println("index= " + index);
         System.err.println("tag= " + cp_info.getTag());
@@ -375,6 +432,14 @@ public class StatementBuilder {
             case STRING:
                 String_Info str_info = (String_Info) cp_info;
                 stack.push(new ReferenceNode("java.lang.String", escapeSTR(pool().getUTF8_Info(str_info.getString_Index()).getValue())));
+                break;
+            case DOUBLE:
+                Double_Info double_info = (Double_Info) cp_info;
+                stack.push(new PrimitiveNode(PrimitiveNode.Type.DOUBLE, double_info.getStringValue()));
+                break;
+            case LONG:
+                Long_Info long_info = (Long_Info) cp_info;
+                stack.push(new PrimitiveNode(PrimitiveNode.Type.LONG, long_info.getStringValue()));
                 break;
         }
 
@@ -427,6 +492,7 @@ public class StatementBuilder {
 
         if (value instanceof PrimitiveNode) {
             variable = new PrimitiveNode(type_name[0], type_name[1]);
+            value = new PrimitiveNode(type_name[0], value.getName());
         } else {
             variable = new ReferenceNode(type_name[0], type_name[1]);
         }

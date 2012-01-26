@@ -12,5 +12,13 @@ public class Long_Info extends CP_Info {
         super(ctag);
         this.value = value;
     }
+
+    public long getLongValue(){
+        return value;
+    }
+    
+    public String getStringValue() {
+        return Long.toString(value);
+    }
     
 }

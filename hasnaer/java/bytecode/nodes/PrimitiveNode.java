@@ -38,6 +38,35 @@ public class PrimitiveNode extends ValueNode {
     
     @Override
     public String toString(){
-        return name;
+        Type t = Type.valueOf(type.trim().toUpperCase());
+        
+        switch(t){
+            case BOOLEAN:
+                if(name.equals("0")){
+                    return "false";
+                }
+                else if(name.equals("1")){
+                    return "true";
+                }
+                
+            case CHAR:
+                try{
+                    char c = (char) Integer.parseInt(name);
+                    return "'" + String.valueOf(c) + "'";
+                } catch(Exception ex){
+                    
+                }
+                
+            default:
+                return name;
+        
+        }
+        
+    }
+    
+    public static void main(String[] args){
+        Type t = Type.valueOf("DOUBLE");
+        
+        System.err.println(t);
     }
 }

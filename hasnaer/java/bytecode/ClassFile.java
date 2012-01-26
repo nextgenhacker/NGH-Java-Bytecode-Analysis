@@ -256,12 +256,16 @@ public class ClassFile extends DataInputStream {
     }
 
     private void loadConstantPool(int constant_pool_count) throws IOException {
+        System.err.println("load constant_pool size: " + constant_pool_count);
         for (int i = 1; i < constant_pool_count; i++) {
             int tag = this.readUnsignedByte();
             CP_Info.Tag ctag = CP_Info.Tag.fromValue(tag);
 
+            System.err.print(i + "  tag= " + tag + " ");
+            
             switch (ctag) {
                 case CLASS:
+                    System.err.println("CLASS_Info");
                     this.getConstant_pool().add(new Class_Info(ctag,
                             this.readUnsignedShort()));
                     break;
@@ -269,36 +273,49 @@ public class ClassFile extends DataInputStream {
                 case FIELDREF:
                 case METHODREF:
                 case INTERFACEMETHODREF:
+                    System.err.println("FMIref_Info");
                     this.getConstant_pool().add(new FMIref_Info(ctag,
                             this.readUnsignedShort(), this.readUnsignedShort()));
                     break;
 
                 case STRING:
+                    System.err.println("STRING_Info");
                     this.getConstant_pool().add(new String_Info(ctag,
                             this.readUnsignedShort()));
                     break;
 
                 case INTEGER:
+                    System.err.println("INTEGER_Info");
                     this.getConstant_pool().add(new Integer_Info(ctag,
                             this.readInt()));
                     break;
                 case FLOAT:
+                    System.err.println("FLOAT_Info");
                     this.getConstant_pool().add(new Float_Info(ctag,
                             this.readFloat()));
                     break;
                 case LONG:
+                    System.err.println("LONG_Info");
                     this.getConstant_pool().add(new Long_Info(ctag,
                             this.readLong()));
+                    // add padding
+                    this.getConstant_pool().add(new Padding());
+                    i++;
                     break;
                 case DOUBLE:
+                    System.err.println("DOUBLE_Info");
                     this.getConstant_pool().add(new Double_Info(ctag,
                             this.readDouble()));
+                    this.getConstant_pool().add(new Padding());
+                    i++;
                     break;
                 case NAME_AND_TYPE:
+                    System.err.println("NameAndType_Info");
                     this.getConstant_pool().add(new NameAndType_Info(ctag,
                             this.readUnsignedShort(), this.readUnsignedShort()));
                     break;
                 case UTF8:
+                    System.err.println("UTF8_Info");
                     this.getConstant_pool().add(new UTF8_Info(ctag, this.readUTF()));
                     break;
             }

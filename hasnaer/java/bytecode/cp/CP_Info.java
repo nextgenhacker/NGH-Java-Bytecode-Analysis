@@ -27,7 +27,8 @@ public abstract class CP_Info {
         LONG(5),
         DOUBLE(6),
         NAME_AND_TYPE(12),
-        UTF8(1);
+        UTF8(1),
+        PADDING(0);
         
         public int value;
         
