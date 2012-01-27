@@ -1,5 +1,6 @@
 package hasnaer.java.bytecode.attribute;
 
+import hasnaer.java.bytecode.cp.ConstantPool;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,8 +13,8 @@ public class InnerClasses extends AttributeInfo {
     private List<Entry> classes;
     
     public InnerClasses(int name_index, int attribute_length,
-            int number_of_classes){
-        super(name_index, attribute_length);
+            int number_of_classes, ConstantPool constant_pool){
+        super(name_index, attribute_length, constant_pool);
         this.classes = new ArrayList<Entry>(number_of_classes);
     }
     

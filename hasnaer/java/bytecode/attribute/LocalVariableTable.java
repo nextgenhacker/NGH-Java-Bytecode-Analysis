@@ -12,13 +12,12 @@ import java.util.List;
 public class LocalVariableTable extends AttributeInfo {
  
     private List<Entry> table;
-    private ConstantPool constant_pool;
     
     public int THIS_INDEX = -1;
     
     public LocalVariableTable(int attribute_name_index, 
             int attribute_length, int table_length, ConstantPool constant_pool){
-        super(attribute_name_index, attribute_length);
+        super(attribute_name_index, attribute_length, constant_pool);
         this.table = new ArrayList<Entry>(table_length);
         this.constant_pool = constant_pool;
     }

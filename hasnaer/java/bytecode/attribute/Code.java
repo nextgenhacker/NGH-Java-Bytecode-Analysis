@@ -1,5 +1,6 @@
 package hasnaer.java.bytecode.attribute;
 
+import hasnaer.java.bytecode.cp.ConstantPool;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +17,8 @@ public class Code extends AttributeInfo {
     private List<AttributeInfo> attributes;
     
     public Code(int name_index, int attribute_length,
-            int max_stack, int max_locals){
-        super(name_index, attribute_length);
+            int max_stack, int max_locals, ConstantPool constant_pool){
+        super(name_index, attribute_length, constant_pool);
         this.exception_table = new ArrayList<Exceptions.Entry>();
         this.max_locals = max_locals;
         this.max_stack = max_stack;        

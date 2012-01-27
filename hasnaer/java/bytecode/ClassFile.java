@@ -102,14 +102,14 @@ public class ClassFile extends DataInputStream {
                 case ConstantValue:
 //                    System.err.println("ConstantValue attribute");
                     attribute = new ConstantValue(attribute_name_index,
-                            attribute_length, this.readUnsignedShort());
+                            attribute_length, this.readUnsignedShort(), constant_pool);
 
                     break;
                 case Code:
 //                    System.err.println("Code attribute");
                     attribute = new Code(attribute_name_index,
                             attribute_length, this.readUnsignedShort(),
-                            this.readUnsignedShort());
+                            this.readUnsignedShort(), constant_pool);
                     int code_length = this.readInt();
                     byte[] code = new byte[code_length];
                     this.readFully(code);
@@ -132,7 +132,7 @@ public class ClassFile extends DataInputStream {
 //                    System.err.println("Exceptions attribute");
                     int number_of_exceptions = this.readUnsignedShort();
                     attribute = new Exceptions(attribute_name_index,
-                            attribute_length, number_of_exceptions);
+                            attribute_length, number_of_exceptions, constant_pool);
 
 
                     for (int j = 0; j < number_of_exceptions; j++) {
@@ -146,7 +146,7 @@ public class ClassFile extends DataInputStream {
 //                    System.err.println("InnerClasses attribute");
                     int number_of_classes = this.readUnsignedShort();
                     attribute = new InnerClasses(attribute_name_index,
-                            attribute_length, number_of_classes);
+                            attribute_length, number_of_classes, constant_pool);
                     for (int j = 0; j < number_of_classes; j++) {
                         ((InnerClasses) attribute).addInnerClass(
                                 new InnerClasses.Entry(this.readUnsignedShort(),
@@ -157,20 +157,20 @@ public class ClassFile extends DataInputStream {
                     break;
                 case Synthetic:
 //                    System.err.println("Synthetic attribute");
-                    attribute = new Synthetic(attribute_name_index, attribute_length);
+                    attribute = new Synthetic(attribute_name_index, attribute_length, constant_pool);
                     break;
 
                 case SourceFile:
 //                    System.err.println("SourceFile attribute");
                     attribute = new SourceFile(attribute_name_index, attribute_length,
-                            this.readUnsignedShort());
+                            this.readUnsignedShort(), constant_pool);
                     break;
 
                 case LineNumberTable:
 //                    System.err.println("LineNumberTable attribute");
                     int line_number_table_length = this.readUnsignedShort();
                     attribute = new LineNumberTable(attribute_name_index,
-                            attribute_length, line_number_table_length);
+                            attribute_length, line_number_table_length, constant_pool);
                     for (int j = 0; j < line_number_table_length; j++) {
                         ((LineNumberTable) attribute).addEntry(j,
                                 this.readUnsignedShort(),
@@ -199,13 +199,13 @@ public class ClassFile extends DataInputStream {
                 case Deprecated:
 //                    System.err.println("Deprecated attribute");
                     attribute = new hasnaer.java.bytecode.attribute.Deprecated(attribute_name_index,
-                            attribute_length);
+                            attribute_length, constant_pool);
                     break;
 
                 case IGNORE:
                 default:
 //                    System.err.println("IGNORE attribute");
-                    attribute = new DefaultAttribute(attribute_name_index, attribute_length);
+                    attribute = new DefaultAttribute(attribute_name_index, attribute_length, constant_pool);
                     this.readFully(((DefaultAttribute) attribute).getData());
                     break;
             }

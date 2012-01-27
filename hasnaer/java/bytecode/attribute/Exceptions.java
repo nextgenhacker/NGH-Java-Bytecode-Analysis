@@ -1,5 +1,6 @@
 package hasnaer.java.bytecode.attribute;
 
+import hasnaer.java.bytecode.cp.ConstantPool;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,8 +14,8 @@ public class Exceptions extends AttributeInfo {
     private int table[];
 
     public Exceptions(int name_index, int attribute_length,
-            int number_of_exceptions) {
-        super(name_index, attribute_length);
+            int number_of_exceptions, ConstantPool constant_pool) {
+        super(name_index, attribute_length, constant_pool);
         this.exception_index_table = new ArrayList<Integer>();
         this.table = new int[number_of_exceptions];
     }

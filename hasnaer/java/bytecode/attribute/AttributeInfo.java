@@ -1,5 +1,7 @@
 package hasnaer.java.bytecode.attribute;
 
+import hasnaer.java.bytecode.cp.ConstantPool;
+
 /**
  *
  * @author hasnae rehioui
@@ -8,8 +10,10 @@ public abstract class AttributeInfo {
     
     private int name_index;
     private int attribute_length;
+    protected ConstantPool constant_pool;
     
-    public AttributeInfo(int name_index, int attribute_length){
+    public AttributeInfo(int name_index, int attribute_length, 
+            ConstantPool constant_pool){
         this.name_index = name_index;
         this.attribute_length = attribute_length;
     }
