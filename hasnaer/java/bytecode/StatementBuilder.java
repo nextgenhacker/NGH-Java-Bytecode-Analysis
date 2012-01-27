@@ -9,10 +9,13 @@ import hasnaer.java.bytecode.cp.Float_Info;
 import hasnaer.java.bytecode.cp.Integer_Info;
 import hasnaer.java.bytecode.cp.Long_Info;
 import hasnaer.java.bytecode.cp.String_Info;
+import hasnaer.java.bytecode.nodes.ArrayLengthNode;
 import hasnaer.java.bytecode.nodes.ArrayRefNode;
 import hasnaer.java.bytecode.nodes.AssignNode;
 import hasnaer.java.bytecode.nodes.CastNode;
+import hasnaer.java.bytecode.nodes.ConditionalBlockNode;
 import hasnaer.java.bytecode.nodes.FieldNode;
+import hasnaer.java.bytecode.nodes.InstanceOfNode;
 import hasnaer.java.bytecode.nodes.InvocationNode;
 import hasnaer.java.bytecode.nodes.JVMNode;
 import hasnaer.java.bytecode.nodes.MethodNode;
@@ -22,7 +25,6 @@ import hasnaer.java.bytecode.nodes.ReferenceNode;
 import hasnaer.java.bytecode.nodes.ReturnNode;
 import hasnaer.java.bytecode.nodes.ValueNode;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -44,7 +46,9 @@ public class StatementBuilder {
     private int lastIndex;
 
     public StatementBuilder(Code code_attribute, int start,
-            int end, LocalVariableTable lvt_attribute) {
+            int end, LocalVariableTable lvt_attribute,
+            Map<Integer, Integer> variables) {
+
         this.start = start;
         this.end = end;
         this.code_attribute = code_attribute;
@@ -52,12 +56,13 @@ public class StatementBuilder {
         this.statements = new ArrayList<JVMNode>();
         this.stack = new Stack<JVMNode>();
         this.executed = false;
-        this.variables = new HashMap<Integer, Integer>();
+        this.variables = variables;
 
-        if (lvt_attribute.THIS_INDEX != -1) {
-            variables.put(lvt_attribute.THIS_INDEX, 0);
+        if (lvt_attribute.THIS_INDEX != -1 && this.variables.isEmpty()) {
+            this.variables.put(lvt_attribute.THIS_INDEX, 0);
         }
-        lastIndex = 0;
+
+        lastIndex = this.variables.size() - 1;
     }
 
     private byte[] code() {
@@ -448,15 +453,120 @@ public class StatementBuilder {
                         i = consumeINVOKEMETHOD(i + 2, unsignedShortAt(i + 1));
                         break;
 
+                    case Opcode.NEWARRAY:
+                        System.err.println("consumeNEWARRAY");
+                        i = consumeNEWARRAY(i);
+                        break;
+
+                    case Opcode.ANEWARRAY:
+                        System.err.println("consumeANEWARRAY");
+                        i = consumeANEWARRAY(i);
+                        break;
+
+                    case Opcode.ARRAYLENGTH:
+                        System.err.println("consumeARRAYLENGTH");
+                        i = consumeARRAYLENGTH(i);
+                        break;
+
+                    case Opcode.CHECKCAST:
+                        System.err.println("consumeCASTREFERENCE");
+                        i = consumeCASTREFERENCE(i);
+                        break;
+
+                    case Opcode.INSTANCEOF:
+                        System.err.println("consumeINSTANCEOF");
+                        i = consumeINSTANCEOF(i);
+                        break;
+
+                    case Opcode.IF_ICMPLE:
+                        System.err.println("consumeIF_INTCMP");
+                        i = consumeIF_INTCMP(i, OperationNode.Type.GT);
+                        break;
+
                     default:
                         throw new Exception("unknown opcode");
                 }
             }
 
+            while (!stack.isEmpty()) {
+                statements.add(stack.pop());
+            }
+
+
+
             executed = true;
         }
 
         return statements;
+    }
+
+    private int doBranching(int begin, int branch, OperationNode condition) throws Exception {
+
+        ConditionalBlockNode c_block = new ConditionalBlockNode(condition);
+
+        StatementBuilder sb = new StatementBuilder(code_attribute,
+                begin, branch, lvt_attribute, variables);
+
+        c_block.setThenBlock(sb.build());
+        this.variables = sb.variables;
+        this.lastIndex = sb.lastIndex;
+
+        statements.add(c_block);
+
+        return branch;
+    }
+
+    private int consumeIF_INTCMP(int pos, OperationNode.Type cmp) throws Exception {
+
+        int branch = unsignedShortAt(pos + 1) + pos;
+
+        System.err.println("branch= " + branch);
+        ValueNode right = (ValueNode) stack.pop();
+        ValueNode left = (ValueNode) stack.pop();
+
+        OperationNode condition = new OperationNode(left, right, cmp);
+
+        return doBranching(pos + 3, branch, condition);
+    }
+
+    private int consumeINSTANCEOF(int pos) {
+        int index = unsignedShortAt(pos + 1);
+        stack.push(new InstanceOfNode(pool().getClassName(index), (ReferenceNode) stack.pop()));
+        return pos + 3;
+    }
+
+    private int consumeCASTREFERENCE(int pos) {
+
+        int index = unsignedShortAt(pos + 1);
+
+        stack.push(new CastNode(pool().getClassName(index), (ValueNode) stack.pop()));
+
+        return pos + 3;
+    }
+
+    private int consumeARRAYLENGTH(int pos) {
+        stack.push(new ArrayLengthNode((ReferenceNode) stack.pop()));
+        return pos + 1;
+    }
+
+    private int consumeANEWARRAY(int pos) {
+        int index = unsignedShortAt(pos + 1);
+        PrimitiveNode count = (PrimitiveNode) stack.pop();
+
+        stack.push(new ArrayRefNode(new ReferenceNode(pool().getClassName(index), "new "), new String[]{count.getName()}));
+
+        return pos + 3;
+    }
+
+    private int consumeNEWARRAY(int pos) {
+
+        int atype = code()[pos + 1];
+        PrimitiveNode count = (PrimitiveNode) stack.pop();
+        PrimitiveNode.Type type = PrimitiveNode.Type.fromCode(atype);
+
+        stack.push(new ArrayRefNode(new ReferenceNode(type.value(), "new "), new String[]{count.getName()}));
+
+        return pos + 2;
     }
 
     private int consumeINVOKESTATIC(int pos) {

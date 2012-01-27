@@ -194,7 +194,7 @@ public class ClassFile extends DataInputStream {
                                 this.readUnsignedShort()));
                     }
                     Collections.sort(((LocalVariableTable) attribute).getTable());
-
+                    ((LocalVariableTable) attribute).init();
                     break;
                 case Deprecated:
 //                    System.err.println("Deprecated attribute");
@@ -218,7 +218,8 @@ public class ClassFile extends DataInputStream {
     private void loadMethods(int methods_count) throws IOException {
         for (int i = 0; i < methods_count; i++) {
             MethodInfo method = new MethodInfo(this.readUnsignedShort(),
-                    this.readUnsignedShort(), this.readUnsignedShort(), constant_pool);
+                    this.readUnsignedShort(), this.readUnsignedShort(), 
+                    constant_pool, this.getClassName());
 
             method.setName(constant_pool.getUTF8_Info(method.getName_index()).getValue());
             method.setDescriptor(constant_pool.getUTF8_Info(method.getDescriptor_index()).getValue());
@@ -244,16 +245,11 @@ public class ClassFile extends DataInputStream {
     private void loadInterfaces(int interfaces_count) throws IOException {
         for (int i = 0; i < interfaces_count; i++) {
             int index = this.readUnsignedShort();
-            this.getInterfaces().add(getInterface(index));
+            this.getInterfaces().add(constant_pool.getClassName(index));
         }
     }
 
-    private String getInterface(int index) {
-
-        int name_index = ((Class_Info) this.getConstant_pool().get(index - 1)).getName_index();
-        return ((UTF8_Info) this.getConstant_pool().get(name_index - 1)).getValue();
-
-    }
+    
 
     private void loadConstantPool(int constant_pool_count) throws IOException {
         System.err.println("load constant_pool size: " + constant_pool_count);
@@ -432,5 +428,9 @@ public class ClassFile extends DataInputStream {
 
     public boolean isInterface() {
         return AccessFlags.isInterface(this.access_flags);
+    }
+
+    public boolean isAbstract(){
+        return AccessFlags.isAbstract(this.access_flags);
     }
 }

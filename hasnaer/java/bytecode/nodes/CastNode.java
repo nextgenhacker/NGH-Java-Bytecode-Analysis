@@ -16,11 +16,15 @@ public class CastNode extends ValueNode {
     @Override
     public String toString(){
         StringBuilder builder = new StringBuilder("(");
-        builder.append(this.name);
+        builder.append(this.type);
         builder.append(") ");
         builder.append(value.toString());
         
         return builder.toString();
 
+    }
+
+    public String toJava(String indent) {
+        return indent + toString();
     }
 }

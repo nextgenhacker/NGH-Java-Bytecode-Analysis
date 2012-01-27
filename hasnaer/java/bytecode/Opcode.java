@@ -22,7 +22,6 @@ public class Opcode {
     public static final int DCONST_0 = 0x0e;
     public static final int DCONST_1 = 0x0f;
 
-
     public static final int BIPUSH = 0x10;
     public static final int SIPUSH = 0x11;
     public static final int LDC = 0x12;
@@ -62,7 +61,7 @@ public class Opcode {
     public static final int AALOAD = 0x32;
     public static final int BALOAD = 0x33;
     public static final int CALOAD = 0x34;
-    public static final int SALOAD = 0x35;    
+    public static final int SALOAD = 0x35;
     public static final int ISTORE = 0x36;
     public static final int LSTORE = 0x37;
     public static final int FSTORE = 0x38;
@@ -90,7 +89,7 @@ public class Opcode {
     public static final int ASTORE_2 = 0x4d;
     public static final int ASTORE_3 = 0x4e;
     public static final int IASTORE = 0x4f;
-    
+
     public static final int LASTORE = 0x50;
     public static final int FASTORE = 0x51;
     public static final int DASTORE = 0x52;
@@ -122,7 +121,6 @@ public class Opcode {
     public static final int LREM = 0x71;
     public static final int FREM = 0x72;
     public static final int DREM = 0x73;
-
     public static final int ISHL = 0x78;
     public static final int LSHL = 0x79;
     public static final int ISHR = 0x7a;
@@ -151,6 +149,8 @@ public class Opcode {
     public static final int I2B = 0x91;
     public static final int I2C = 0x92;
     public static final int I2S = 0x93;
+
+    public static final int IF_ICMPLE = 0xa4;
     
     public static final int IRETURN = 0xac;
     public static final int LRETURN = 0xad;
@@ -167,7 +167,13 @@ public class Opcode {
     public static final int INVOKESPECIAL = 0xb7;
     public static final int INVOKESTATIC = 0xb8;
     public static final int INVOKEINTERFACE = 0xb9;
+    public static final int NEW = 0xbb;
+    public static final int NEWARRAY = 0xbc;
+    public static final int ANEWARRAY = 0xbd;
+    public static final int ARRAYLENGTH = 0xbe;
+
+    public static final int CHECKCAST = 0xc0;
+    public static final int INSTANCEOF = 0xc1;
 
     
-    public static final int NEW = 0xbb;
 }

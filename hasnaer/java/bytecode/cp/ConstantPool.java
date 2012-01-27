@@ -85,4 +85,8 @@ public class ConstantPool extends ArrayList<CP_Info> {
         
         return retvalue;
     }
+
+    public String getClassName(int index){
+        return getUTF8_Info(getClass_Info(index).getName_index()).getValue().replace("/", ".");
+    }
 }

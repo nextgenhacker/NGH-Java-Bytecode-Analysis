@@ -24,5 +24,9 @@ public class InvocationNode extends ValueNode {
 
         return builder.toString();
     }
+
+    public String toJava(String indent) {
+        return indent + toString();
+    }
     
 }

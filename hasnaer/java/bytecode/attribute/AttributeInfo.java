@@ -16,6 +16,7 @@ public abstract class AttributeInfo {
             ConstantPool constant_pool){
         this.name_index = name_index;
         this.attribute_length = attribute_length;
+        this.constant_pool = constant_pool;
     }
 
     /**

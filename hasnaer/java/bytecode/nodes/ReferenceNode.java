@@ -14,4 +14,8 @@ public class ReferenceNode extends ValueNode {
     public String toString(){
         return name;
     }
+
+    public String toJava(String indent) {
+        return indent + toString();
+    }
 }

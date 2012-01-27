@@ -64,4 +64,27 @@ public class Descriptor {
         
         return params.split(";").length;
     }
+
+    static String[] getParamTypes(String descriptor) {
+
+        int start_index = descriptor.indexOf("(");
+        int end_index = descriptor.indexOf(")");
+
+        String params = descriptor.substring(start_index + 1, end_index);
+
+        if(params.length() == 0){
+            return null;
+        }
+
+        String[] tokens = params.split(";");
+
+        String[] formatted = new String[tokens.length];
+
+        int i = 0;
+        for(String token : tokens){
+            formatted[i++] = fieldDataType(token);
+        }
+        
+        return formatted;
+    }
 }

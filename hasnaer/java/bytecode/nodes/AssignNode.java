@@ -16,6 +16,10 @@ public class AssignNode implements JVMNode {
         this.type = type;
     }
 
+    public String toJava(String indent) {
+        return indent + toString();
+    }
+
     public enum Type {
         FIRST,NONFIRST;
     }

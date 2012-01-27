@@ -31,7 +31,12 @@ public class Exceptions extends AttributeInfo {
     public int[] getTable(){
         return table;
     }
-    
+
+    public String getExceptionClassName(int index){
+        return constant_pool.getClassName(table[index]);
+    }
+
+
     public static class Entry {
 
         private int start_pc;

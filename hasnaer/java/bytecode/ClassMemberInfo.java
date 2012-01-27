@@ -10,16 +10,16 @@ import java.util.List;
  */
 public abstract class ClassMemberInfo {
     
-    private int access_flags;
-    private int name_index;
-    private int descriptor_index;
+    protected int access_flags;
+    protected int name_index;
+    protected int descriptor_index;
     
-    private List<AttributeInfo> attributes;
+    protected List<AttributeInfo> attributes;
     
-    private ConstantPool constant_pool;
+    protected ConstantPool constant_pool;
     
-    private String name;
-    private String descriptor;
+    protected String name;
+    protected String descriptor;
     
     public ClassMemberInfo(int access_flags, 
             int name_index, int descriptor_index, ConstantPool constant_pool){

@@ -20,4 +20,8 @@ public class FieldNode extends InvocableNode {
         }
         return "." + name;
     }
+
+    public String toJava(String indent) {
+        return indent + toString();
+    }
 }

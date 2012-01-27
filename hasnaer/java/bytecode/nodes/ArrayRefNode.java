@@ -26,6 +26,9 @@ public class ArrayRefNode extends ReferenceNode {
     public String toString(){
         StringBuilder builder = new StringBuilder();
         builder.append(this.getName());
+        if(getName().equalsIgnoreCase("new ")){
+            builder.append(getType());
+        }
         for(String c : count){
             builder.append("[");
             builder.append(c);

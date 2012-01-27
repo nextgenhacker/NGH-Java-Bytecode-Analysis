@@ -18,4 +18,8 @@ public class ReturnNode implements JVMNode {
         builder.append(this.return_value.toString());
         return builder.toString();
     }
+
+    public String toJava(String indent) {
+        return indent + toString();
+    }
 }

@@ -61,4 +61,8 @@ public class MethodNode extends InvocableNode {
         builder.append(")");
         return builder.toString();
     }
+
+    public String toJava(String indent) {
+        return indent + toString();
+    }
 }

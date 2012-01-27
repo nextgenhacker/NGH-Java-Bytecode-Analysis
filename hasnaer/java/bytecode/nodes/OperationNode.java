@@ -16,6 +16,10 @@ public class OperationNode extends ValueNode {
         this.right = right;
         this.op = op;
     }
+
+    public String toJava(String indent) {
+        return indent + toString();
+    }
     
     public enum Type{
         ADD(" + "), 
